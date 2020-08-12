@@ -11,8 +11,8 @@
 #' @examples
 #' rpt_daily_readExcel()
 rpt_daily_readExcel <- function(file="data-raw/jala_rpt.xlsx",sheet = "daily") {
-  jala_rpt <- readxl::read_excel("data-raw/jala_rpt.xlsx",
-                         sheet = "daily")
+  jala_rpt <- readxl::read_excel(file,
+                         sheet = sheet)
   allColNames <- names(jala_rpt)
   fixedColNames=c('序号','项目')
   varColNames = allColNames[!allColNames %in% fixedColNames]
@@ -29,24 +29,6 @@ rpt_daily_readExcel <- function(file="data-raw/jala_rpt.xlsx",sheet = "daily") {
   return(data_melt)
 
 }
-
-#' 资金日报写入数据库
-#'
-#' @param file 文件
-#' @param sheet 页答
-#' @param conn 连接信息
-#'
-#' @return 返回值
-#' @export
-#'
-#' @examples
-#' rpt_daily_writeDb()
-rpt_daily_writeDb <- function(file="data-raw/jala_rpt.xlsx",sheet = "daily",conn=tsda::conn_rds('jlrds')){
-    data <- rpt_daily_readExcel(file=file,sheet=sheet)
-    tsda::db_writeTable(conn = conn,table_name = 't_zjrb_dailyInput',r_object = data,append = T)
-
-}
-
 
 #' 同步数据
 #'
@@ -80,6 +62,28 @@ select *  from t_zjrb_dailyInput")
 
 
 }
+
+#' 资金日报写入数据库
+#'
+#' @param file 文件
+#' @param sheet 页答
+#' @param conn 连接信息
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' rpt_daily_writeDb()
+rpt_daily_writeDb <- function(file="data-raw/jala_rpt.xlsx",sheet = "daily",conn=tsda::conn_rds('jlrds')){
+    data <- rpt_daily_readExcel(file=file,sheet=sheet)
+    tsda::db_writeTable(conn = conn,table_name = 't_zjrb_dailyInput',r_object = data,append = T)
+    #同步数据
+    rpt_daily_sync(conn = conn)
+
+}
+
+
+
 
 
 #' 查询日志数据
