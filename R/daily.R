@@ -109,8 +109,15 @@ and FLevel = ",FLevel," ")
 
   }
   data = tsda::sql_select(conn,sql)
+  ncount <- nrow(data)
   if(format != 'list'){
-    data <- reshape2::dcast(data,FRptItemNo+FRptItemName~FDate,fun.aggregate = sum)
+    if(ncount >0){
+      data <- reshape2::dcast(data,FRptItemNo+FRptItemName~FDate,fun.aggregate = sum,value.var = 'FAmount')
+    }else{
+      data <- data.frame(`友情提示`='没有查到结果,请检查日期范围的参数设置')
+
+    }
+
   }
   return(data)
 
