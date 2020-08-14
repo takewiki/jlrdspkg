@@ -339,7 +339,7 @@ weekRpt_selectDB <- function(conn=tsda::conn_rds('jlrds'),year=2020,startWeekNo=
     sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
-where Ftype ='jala' and b.FAmtType in(",AmtType,")
+where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
 and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
 order by Fyear,FweekNo,FRptItemNo,b.FId
 ")
@@ -347,7 +347,7 @@ order by Fyear,FweekNo,FRptItemNo,b.FId
     sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
-where Ftype ='jala' and b.FAmtType in(",AmtType,")
+where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
 and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
   and FLevel =",FLevel,"
 order by Fyear,FweekNo,FRptItemNo,b.FId
