@@ -11,7 +11,8 @@ weekRpt_selectDB(
   endWeekNo = 12,
   AmtType = c("本周发生额", "较上周变动额", "较上周变动\%"),
   FLevel = 0,
-  FType = "jala"
+  FType = "jala",
+  Amt_Unit = "wan"
 )
 }
 \arguments{
@@ -25,7 +26,11 @@ weekRpt_selectDB(
 
 \item{AmtType}{字段类型向量}
 
+\item{FLevel}{级次}
+
 \item{FType}{类型}
+
+\item{Amt_Unit}{金额单位}
 }
 \value{
 返回值

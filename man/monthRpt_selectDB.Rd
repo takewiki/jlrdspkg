@@ -8,7 +8,8 @@ monthRpt_selectDB(
   conn = tsda::conn_rds("jlrds"),
   year = 2020,
   AmtType = c("本月发生额", "较上月变动额", "较上月变动\%"),
-  FLevel = 0
+  FLevel = 0,
+  amtUnit = "wan"
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ monthRpt_selectDB(
 \item{AmtType}{金额类型}
 
 \item{FLevel}{级次}
+
+\item{amtUnit}{金额单位默认万元}
 }
 \value{
 返回值

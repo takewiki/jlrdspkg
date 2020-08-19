@@ -322,6 +322,8 @@ week_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,weekNo=10,type='jal
 #' @param endWeekNo 结束周号
 #' @param AmtType 字段类型向量
 #' @param FType 类型
+#' @param FLevel 级次
+#' @param Amt_Unit 金额单位
 #'
 #' @return 返回值
 #' @export
@@ -329,22 +331,40 @@ week_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,weekNo=10,type='jal
 #' @examples
 #' weekRpt_selectDB()
 weekRpt_selectDB <- function(conn=tsda::conn_rds('jlrds'),year=2020,startWeekNo=9,endWeekNo=12,
-                           AmtType=c('本周发生额','较上周变动额','较上周变动%'),
-                           FLevel = 0,
-                           FType ='jala') {
+                             AmtType=c('本周发生额','较上周变动额','较上周变动%'),
+                             FLevel = 0,
+                             FType ='jala',
+                             Amt_Unit='wan') {
   #将向量转化为字符串
   AmtType = vect_to_string(vect = AmtType)
   #进行SQL处理
   if(FLevel ==0){
-    sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
+
+    if(Amt_Unit =='wan'){
+      #万元处理
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_wan_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
 where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
 and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
 order by Fyear,FweekNo,FRptItemNo,b.FId
 ")
+    }else{
+      #元处理
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
+inner join t_zjrb_amtType b
+on a.FAmtType = b.FId
+where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
+and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
+order by Fyear,FweekNo,FRptItemNo,b.FId
+")
+    }
+
   }else{
-    sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
+
+    if(Amt_Unit =='wan'){
+      #万元处理
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_wan_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
 where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
@@ -352,6 +372,19 @@ and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
   and FLevel =",FLevel,"
 order by Fyear,FweekNo,FRptItemNo,b.FId
 ")
+
+    }else{
+      #元处理
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,FweekName from vw_weekRpt_all_ByRows a
+inner join t_zjrb_amtType b
+on a.FAmtType = b.FId
+where Ftype ='",FType,"' and b.FAmtType in(",AmtType,")
+and Fyear =",year," and FweekNo >=",startWeekNo," and FweekNo <=",endWeekNo,"
+  and FLevel =",FLevel,"
+order by Fyear,FweekNo,FRptItemNo,b.FId
+")
+    }
+
   }
 
   res <- tsda::sql_select(conn,sql)
@@ -407,3 +440,108 @@ order  by FId")
   return(res)
 
 }
+
+
+#' 针对周的余额数据执行删除处理
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param FweekNo 周次
+#' @param Ftype 类型
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' week_DelBal()
+week_DelBal <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,FweekNo =30,Ftype ='nature') {
+  sql_sel <-paste0("select 1 from t_zjrb_weekBal where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+  r <- tsda::sql_select(conn,sql_sel)
+  ncount <-nrow(r)
+  if(ncount >0){
+    sql_del <-paste0("delete from t_zjrb_weekBal where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+    tsda::sql_update(conn,sql_del)
+  }
+
+}
+
+
+
+
+#' 删除周报数据
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param FweekNo 周次
+#' @param Ftype 类型
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' week_DelRpt()
+week_DelRpt <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,FweekNo =30,Ftype ='nature') {
+  sql_sel <-paste0("select 1 from t_zjrb_weekRpt where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+  r <- tsda::sql_select(conn,sql_sel)
+  ncount <-nrow(r)
+  if(ncount >0){
+    sql_del <-paste0("delete from t_zjrb_weekRpt where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+    tsda::sql_update(conn,sql_del)
+  }
+
+}
+
+
+
+
+#' 删除统计信息
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param FweekNo 周次
+#' @param Ftype 类型
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' week_DelStat()
+week_DelStat <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,FweekNo =30,Ftype ='nature') {
+  sql_sel <-paste0("select 1 from t_zjrb_weekStat where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+  r <- tsda::sql_select(conn,sql_sel)
+  ncount <-nrow(r)
+  if(ncount >0){
+    sql_del <-paste0("delete from t_zjrb_weekStat where Fyear =",Fyear," and FweekNo = ",FweekNo," and Ftype ='",Ftype,"'")
+    tsda::sql_update(conn,sql_del)
+  }
+
+}
+
+
+#' 完善后的周报更新逻辑
+#'
+#' @param conn 连接
+#' @param Fyear 周年份
+#' @param FweekNo 周次
+#' @param Ftype 类型
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' week_update()
+week_update <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,FweekNo =30,Ftype ='nature') {
+  #删除余额
+  week_DelBal(conn = conn,Fyear = Fyear,FweekNo = FweekNo,Ftype = Ftype)
+  #删除周报
+  week_DelRpt(conn=conn,Fyear = Fyear,FweekNo = FweekNo,Ftype = Ftype)
+  #删除周报统计信息
+  week_DelStat(conn=conn,Fyear = Fyear,FweekNo = FweekNo,Ftype = Ftype)
+  #更新周报
+  week_deal(conn = conn,year = Fyear,weekNo = FweekNo,type = Ftype)
+  #更新更报统计信息
+  week_stat(conn=conn,year = Fyear,weekNo = FweekNo,type = Ftype)
+
+}
+
+

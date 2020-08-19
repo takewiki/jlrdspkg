@@ -306,6 +306,7 @@ month_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,month=3){
 #' @param year 年份
 #' @param AmtType 金额类型
 #' @param FLevel 级次
+#' @param amtUnit 金额单位默认万元
 #'
 #' @return 返回值
 #' @export
@@ -314,26 +315,55 @@ month_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,month=3){
 #' monthRpt_selectDB()
 monthRpt_selectDB <- function(conn=tsda::conn_rds('jlrds'),year=2020,
                              AmtType=c('本月发生额','较上月变动额','较上月变动%'),
-                             FLevel = 0) {
+                             FLevel = 0,
+                             amtUnit='wan') {
   #将向量转化为字符串
   AmtType = vect_to_string(vect = AmtType)
   #进行SQL处理
   if(FLevel ==0){
-    sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_all_ByRows a
+    if(amtUnit =='wan'){
+      #处理万元
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_wan_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
 where  b.FAmtType in(",AmtType,")
 and Fyear =",year,"
 order by Fyear,Fmonth,FRptItemNo,b.FId
 ")
+    }else{
+      #处理元
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_all_ByRows a
+inner join t_zjrb_amtType b
+on a.FAmtType = b.FId
+where  b.FAmtType in(",AmtType,")
+and Fyear =",year,"
+order by Fyear,Fmonth,FRptItemNo,b.FId
+")
+    }
+
   }else{
-    sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_all_ByRows a
+    if( amtUnit =='wan'){
+      #处理万元
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_wan_all_ByRows a
 inner join t_zjrb_amtType b
 on a.FAmtType = b.FId
 where  b.FAmtType in(",AmtType,")
 and Fyear =",year,"  and FLevel =",FLevel,"
 order by Fyear,Fmonth,FRptItemNo,b.FId
 ")
+
+    }else{
+      #处理元
+      sql = paste0("select  FRptItemNo,FRptItemName,FAmount,b.FAmtType,Fperiod from vw_monthRpt_all_ByRows a
+inner join t_zjrb_amtType b
+on a.FAmtType = b.FId
+where  b.FAmtType in(",AmtType,")
+and Fyear =",year,"  and FLevel =",FLevel,"
+order by Fyear,Fmonth,FRptItemNo,b.FId
+")
+
+    }
+
   }
 
   res <- tsda::sql_select(conn,sql)
@@ -366,4 +396,104 @@ order  by FId")
   return(res)
 
 }
+
+
+
+#' 删除月报余额
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param Fmonth 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' month_DelBal()
+month_DelBal <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,Fmonth =7) {
+  sql_sel <- paste0("select 1 from t_zjrb_monthBal where Fyear =",Fyear," and Fmonth =",Fmonth)
+   r <- tsda::sql_select(conn,sql_sel)
+   ncount <- nrow(r)
+   if(ncount >0){
+     sql_del <-paste0("delete from t_zjrb_monthBal where Fyear =",Fyear," and Fmonth =",Fmonth)
+     tsda::sql_update(conn,sql_del)
+   }
+
+}
+
+#' 删除月报数据
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param Fmonth 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' month_DelRpt()
+month_DelRpt <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,Fmonth =7) {
+  sql_sel <- paste0("select 1 from t_zjrb_monthRpt where Fyear =",Fyear," and Fmonth =",Fmonth)
+  r <- tsda::sql_select(conn,sql_sel)
+  ncount <- nrow(r)
+  if(ncount >0){
+    sql_del <-paste0("delete from t_zjrb_monthRpt where Fyear =",Fyear," and Fmonth =",Fmonth)
+    tsda::sql_update(conn,sql_del)
+  }
+
+}
+
+
+#' 删除月报统计数据
+#'
+#' @param conn 连接
+#' @param Fyear 年份
+#' @param Fmonth 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' month_DelStat()
+month_DelStat <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,Fmonth =7) {
+  sql_sel <- paste0("select 1 from t_zjrb_monthStat where Fyear =",Fyear," and Fmonth =",Fmonth)
+  r <- tsda::sql_select(conn,sql_sel)
+  ncount <- nrow(r)
+  if(ncount >0){
+    sql_del <-paste0("delete from t_zjrb_monthStat where Fyear =",Fyear," and Fmonth =",Fmonth)
+    tsda::sql_update(conn,sql_del)
+  }
+
+}
+
+
+#' 月报更新
+#'
+#' @param conn 连接
+#' @param Fyear 月份
+#' @param Fmonth 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' month_update()
+month_update <- function(conn=tsda::conn_rds('jlrds'),Fyear =2020,Fmonth =7) {
+
+  #删除数据
+  month_DelBal(conn=conn,Fyear = Fyear,Fmonth = Fmonth)
+  month_DelRpt(conn=conn,Fyear = Fyear,Fmonth = Fmonth)
+  month_DelStat(conn=conn,Fyear = Fyear,Fmonth = Fmonth)
+
+  #执行更新
+  month_deal(conn=conn,year = Fyear,month = Fmonth)
+  month_stat(conn=conn,year = Fyear,month = Fmonth)
+
+
+}
+
+
+
+
+
 
