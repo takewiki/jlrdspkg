@@ -215,6 +215,7 @@ own_deal <- function(conn=tsda::conn_rds('jlrds'),FYear=2020,FMonth=7,FUnit='yua
    value43 <-data[data$FRptItemNo =='16','FAmount']
 
    data[data$FRptItemNo =='26','FAmount'] = value41+value42-value43
+   data$FAmount <- round(data$FAmount,2)
    #data$FYear <- FYear
    #data$FMonth <- FMonth
    names(data) <- c('序号','项目','余额')
