@@ -255,7 +255,11 @@ week_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,weekNo=10,type='jal
     res$FCurrentAmt <- round(res$FCurrentAmt,2)
     #合并上期数据
     if(ncount_lastWeek ){
-      res$FLastWeekAmt <- round(res_lastWeek$FAmount,2)
+
+      names(res_lastWeek) <-c('FRptItemNo','FRptItemName','FLastWeekAmt')
+      res_lastWeek <- res_lastWeek[,c('FRptItemNo','FLastWeekAmt')]
+      res <- dplyr::left_join(res,res_lastWeek,by='FRptItemNo')
+      res$FLastWeekAmt <- round(res$FLastWeekAmt,2)
       res$FLastWeekVariance = round(res$FCurrentAmt -res$FLastWeekAmt,2)
 
         res$FLastWeekPercent =rpt_percent(res$FCurrentAmt ,res$FLastWeekAmt,4)
@@ -270,7 +274,10 @@ week_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,weekNo=10,type='jal
 
     #合并去年数据
     if(ncount_lastYear){
-      res$FLastYearAmt <- round(res_lastYear$FAmount,2)
+      names(res_lastYear) <-c('FRptItemNo','FRptItemName','FLastYearAmt')
+      res_lastYear <- res_lastYear[,c('FRptItemNo','FLastYearAmt')]
+      res <- dplyr::left_join(res,res_lastYear,by='FRptItemNo')
+      res$FLastYearAmt <- round(res$FLastYearAmt,2)
       res$FLastYearVariance <- round(res$FCurrentAmt -res$FLastYearAmt,2)
 
      res$FLastYearPercent = rpt_percent(res$FCurrentAmt, res$FLastYearAmt,4)
