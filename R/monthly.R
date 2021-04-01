@@ -279,11 +279,19 @@ month_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,month=3){
       print('s3')
       names(res_lastYear) <- c('FRptItemNo','FRptItemName','FLastYearAmt')
       res_lastYear <- res_lastYear[,c('FRptItemNo','FLastYearAmt')]
+      print('s3.01')
       res <- dplyr::left_join(res,res_lastYear,by='FRptItemNo')
+      print('s3.02')
       res$FLastYearAmt <- round(res$FLastYearAmt,2)
+      print('s3.03')
       res$FLastYearVariance <- round(res$FCurrentAmt -res$FLastYearAmt,2)
+      print('s3.04')
+      print(res$FCurrentAmt)
+      print(res$FLastYearAmt)
 
       res$FLastYearPercent = rpt_percent(res$FCurrentAmt, res$FLastYearAmt,4)
+      print('s3.05')
+
 
     }else{
       print('s4')
@@ -293,12 +301,17 @@ month_stat <- function(conn=tsda::conn_rds('jlrds'),year=2020,month=3){
 
     }
     #增加相关信息
+    print('s5')
     res$Fyear <-year
     res$Fmonth <- month
+    print(res)
     #写入数据库
-    #print(head(res))
+    print(head(res))
+    print('s6')
+
     for (i in 1:nrow(res)) {
 
+      print(res[i,])
       print(i)
       tsda::db_writeTable(conn = conn,table_name = 't_zjrb_monthStat',r_object = res[i,],append = T)
 

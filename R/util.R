@@ -12,13 +12,18 @@
 rpt_percent <- function(value,base,digit=2) {
   ncount <- length(value)
   r <- lapply(1:ncount, function(i){
+    print(i)
+    print(base[i])
+
     if(is.na(base[i])){
-      res <- NA
-    }
-    if( base[i] == 0){
-      res <- NA
+      res <- 0
     }else{
-      res <- round((value[i] /(base[i] +0.1-0.1) -1)*100,digit)
+      if(base[i] ==0){
+        res <-0
+      }else{
+        res <- round((value[i] /(base[i] +0.1-0.1) -1)*100,digit)
+      }
+
     }
   })
   res <- unlist(r)
