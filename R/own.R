@@ -249,22 +249,17 @@ own_deal <- function(conn=tsda::conn_rds('jlrds'),FYear=2021,FMonth=3,FUnit='yua
    value43 <-data[data$FRptItemNo =='16','FAmount']
 
    data[data$FRptItemNo =='26','FAmount'] = value41+value42-value43
-   data$FAmount <- round(data$FAmount,2)
-   #data$FYear <- FYear
-   #data$FMonth <- FMonth
-   names(data) <- c('序号','项目','余额')
+
+   #针对金额进行处理
+   FAmount_Value <- data$FAmount
+   data$FAmount <- tsdo::num_to_string_AcctFormat(FAmount_Value)
+   data$FAmount_Wan <- tsdo::num_to_string_AcctFormat(FAmount_Value,divided_value = 10000)
+
+   names(data) <- c('序号','项目','余额','余额(万元)')
+   #去掉行序号
+   data$`序号` <- 1:nrow(data)
+   rownames(data) <- NULL
+
    return(data)
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
