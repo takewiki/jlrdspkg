@@ -4,10 +4,21 @@
 \alias{sap_costCenter_standardize}
 \title{针对SAP成本中心进行标准化处理}
 \usage{
-sap_costCenter_standardize(file = "data-raw/rpt_mngr/成本中心划分总表.xlsx")
+sap_costCenter_standardize(
+  file = "data-raw/rpt_mngr/成本中心划分总表 - V3.xlsx",
+  FYear = 2021,
+  FPeriod = 4,
+  conn = tsda::conn_rds("jlrds")
+)
 }
 \arguments{
 \item{file}{文件名}
+
+\item{FYear}{年份}
+
+\item{FPeriod}{月份}
+
+\item{conn}{连接信息}
 }
 \value{
 返回值
