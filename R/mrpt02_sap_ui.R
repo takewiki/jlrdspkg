@@ -44,3 +44,30 @@ mrpt_md_ui_division <- function(conn=tsda::conn_rds('jlrds')) {
   return(r)
 
 }
+
+
+
+#' 读取SAP数据源信息
+#'
+#' @param conn 连接
+#' @param FYear 年份
+#' @param FPeriod 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_ds_ui_sapData()
+mrpt_ds_ui_sapData <- function(conn=tsda::conn_rds('jlrds'),FYear =2021,FPeriod =5) {
+
+  sql <- paste0("select * from t_mrpt_data_sap
+where FYear =  ",FYear," and FPeriod =  ",FPeriod)
+  r <- tsda::sql_select(conn,sql)
+  ncount <- nrow(r)
+  if (ncount >0){
+    names(r) <- c('凭证日期','过账日期','成本中心代码','成本中心名称','成本项目代码','成本项目名称','金额','摘要','凭证号','年','月')
+  }
+  return(r)
+
+}
+
