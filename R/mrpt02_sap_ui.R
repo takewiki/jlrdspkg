@@ -96,3 +96,29 @@ where FYear =  ",FYear," and FPeriod =  ",FPeriod)
   return(r)
 
 }
+
+
+
+
+
+
+#' 报表项目表
+#'
+#' @param conn 连接
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_md_ui_rptItem()
+mrpt_md_ui_rptItem <- function(conn=tsda::conn_rds('jlrds')) {
+
+  sql <- paste0("select * from t_mrpt_rptItem")
+  r <- tsda::sql_select(conn,sql)
+  ncount <- nrow(r)
+  if (ncount >0){
+    names(r) <- c('报表项目序号','报表项目名称','计算公式','渠道类型','费用统一名称')
+  }
+  return(r)
+
+}
