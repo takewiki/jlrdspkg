@@ -71,3 +71,28 @@ where FYear =  ",FYear," and FPeriod =  ",FPeriod)
 
 }
 
+
+
+#' 成本项目及报表项目对照表
+#'
+#' @param conn 连接
+#' @param FYear 年份
+#' @param FPeriod 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_ui_itemMapping_costRpt()
+mrpt_ui_itemMapping_costRpt <- function(conn=tsda::conn_rds('jlrds'),FYear =2021,FPeriod =5) {
+
+  sql <- paste0("select * from t_mrpt_costItem_sap
+where FYear =  ",FYear," and FPeriod =  ",FPeriod)
+  r <- tsda::sql_select(conn,sql)
+  ncount <- nrow(r)
+  if (ncount >0){
+    names(r) <- c('成本项目','报表项目','年','月')
+  }
+  return(r)
+
+}
