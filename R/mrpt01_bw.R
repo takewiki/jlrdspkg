@@ -212,7 +212,7 @@ mrpt_bw_deal <- function(file="data-raw/mrpt04/BWdata/B001_04.xlsx",
 
                          skip = 1) {
   #library(readxl)
-  res <- readxl::read_excel(file,skip = skip)
+  res <- readxl::read_excel(file,sheet = "Sheet1",skip = skip)
   #print('bug2')
   solutionNumber= mrpt_bw_getSolutionByFile(file_name = file)
   #
