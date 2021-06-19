@@ -41,5 +41,25 @@ mrpt_bw_ui_getDimName <- function(conn=tsda::conn_rds('jlrds')) {
 }
 
 
+#' BW报表的业务处理规则
+#'
+#' @param conn 连接
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_bw_ui_businessRule()
+mrpt_bw_ui_businessRule <- function(conn=tsda::conn_rds('jlrds')) {
+  sql <- paste0("   select  FInterId,FSolutionNumber,FValueName,FBrand_o,FChannel_o,FRptItem_o,FRptItemNumber    from t_mrpt_rule_bw")
+  res <- tsda::sql_select(conn,sql)
+  ncount <- nrow(res)
+  if(ncount >0){
+    names(res) <- c('序号','方案号','指标名称','品牌','渠道','报表项目名称','报表项目代码')
+  }
+  return(res)
+}
+
+
 
 
