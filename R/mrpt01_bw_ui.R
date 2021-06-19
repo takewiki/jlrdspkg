@@ -74,13 +74,13 @@ mrpt_bw_ui_businessRule <- function(conn=tsda::conn_rds('jlrds')) {
 #' @examples
 #' mrpt_bw_ds_data()
 mrpt_bw_ds_data <- function(conn=tsda::conn_rds('jlrds'),FYear =2021,FPeriod =5) {
-  sql <- paste0("   select FBrand,FChannel,FValueName,FSolutionNumber,FValue from t_mrpt_data_bw
+  sql <- paste0("    select FBrand,FChannel,FValueName,FSolutionNumber,FValue,FYear,FPeriod from t_mrpt_data_bw
  where FYear =  ",FYear," and FPeriod =   ",FPeriod,"
  order by FBrand,FChannel,  FValueName,FSolutionNumber")
   res <- tsda::sql_select(conn,sql)
   ncount <- nrow(res)
   if(ncount >0){
-    names(res) <- c('品牌','渠道','指标名称','方案号','金额')
+    names(res) <- c('品牌','渠道','指标名称','方案号','金额','年','月')
   }
   return(res)
 }
