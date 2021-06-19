@@ -62,4 +62,37 @@ mrpt_bw_ui_businessRule <- function(conn=tsda::conn_rds('jlrds')) {
 
 
 
+#' 获取BW数据源
+#'
+#' @param conn 连接
+#' @param FYear 年份
+#' @param FPeriod 期间
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_bw_ds_data()
+mrpt_bw_ds_data <- function(conn=tsda::conn_rds('jlrds'),FYear =2021,FPeriod =5) {
+  sql <- paste0("   select FBrand,FChannel,FValueName,FSolutionNumber,FValue from t_mrpt_data_bw
+ where FYear =  ",FYear," and FPeriod =   ",FPeriod,"
+ order by FBrand,FChannel,  FValueName,FSolutionNumber")
+  res <- tsda::sql_select(conn,sql)
+  ncount <- nrow(res)
+  if(ncount >0){
+    names(res) <- c('品牌','渠道','指标名称','方案号','金额')
+  }
+  return(res)
+}
+
+
+
+
+
+
+
+
+
+
+
 
