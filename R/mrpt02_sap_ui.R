@@ -65,7 +65,7 @@ where FYear =  ",FYear," and FPeriod =  ",FPeriod)
   r <- tsda::sql_select(conn,sql)
   ncount <- nrow(r)
   if (ncount >0){
-    names(r) <- c('凭证日期','过账日期','成本中心代码','成本中心名称','成本项目代码','成本项目名称','金额','摘要','凭证号','年','月')
+    names(r) <- c('凭证日期','过账日期','成本中心代码','成本中心名称','成本要素代码','成本要素名称','金额','摘要','凭证号','年','月')
   }
   return(r)
 
@@ -91,7 +91,7 @@ where FYear =  ",FYear," and FPeriod =  ",FPeriod)
   r <- tsda::sql_select(conn,sql)
   ncount <- nrow(r)
   if (ncount >0){
-    names(r) <- c('成本项目','报表项目','年','月')
+    names(r) <- c('成本要素','统一费用名称','年','月')
   }
   return(r)
 
