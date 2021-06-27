@@ -122,3 +122,43 @@ mrpt_md_ui_rptItem <- function(conn=tsda::conn_rds('jlrds')) {
   return(r)
 
 }
+
+
+
+
+
+#处理表--------
+#' SAP处理结果表
+#'
+#' @param conn 连接
+#' @param FBrand 品牌
+#' @param FChannel 渠道
+#' @param FYear 年份
+#' @param FPeriod 月份
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' sap_res_ui_fromDB()
+sap_res_ui_fromDB <-function(conn=tsda::conn_rds('jlrds'),
+                             FBrand ='自然堂',
+                             FChannel='商超',
+                             FYear=2021,
+                             FPeriod=5){
+  sql <- paste0("select * from vw_mrpt_data_sap
+where FBrand2 ='",FBrand,"' and FChannel2='",FChannel,"' and FYear= ",FYear," and FPeriod= ",FPeriod)
+  res <- tsda::sql_select(conn,sql)
+  ncount =nrow(res)
+  if(ncount >0){
+    names(res) <- c('年','月','成本中心代码','成本要素名称','凭证金额','报表项目名称','报表项目代码','成本中心类型',
+                    '品牌','渠道','渠道费用比率','分配金额','凭证号')
+  }
+  return(res)
+
+
+}
+
+
+
+
