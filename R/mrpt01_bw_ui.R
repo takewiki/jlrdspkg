@@ -91,8 +91,36 @@ mrpt_bw_ds_data <- function(conn=tsda::conn_rds('jlrds'),FYear =2021,FPeriod =5)
 
 
 
+#' 读取BW处理中间表
+#'
+#' @param conn 连接
+#' @param FBrand 品牌
+#' @param FChannel 渠道
+#' @param FYear 年
+#' @param FPeriod 月
+#'
+#' @return 返回
+#' @export
+#'
+#' @examples
+#' bw_res_ui_fromDB()
+bw_res_ui_fromDB <-function(conn=tsda::conn_rds('jlrds'),
+                             FBrand ='自然堂',
+                             FChannel='商超',
+                             FYear=2021,
+                             FPeriod=5){
+  sql <- paste0("select  * from vw_mrpt_data_bw
+where FBrand ='",FBrand,"' and FChannel ='",FChannel,"' and FYear = ",FYear ," and FPeriod =   ",FPeriod)
+  res <- tsda::sql_select(conn,sql)
+  ncount =nrow(res)
+  if(ncount >0){
+    names(res) <- c('方案号','品牌','渠道','BW指标','报表金额','年','月','报表项目名称',
+                    '报表项目代码')
+  }
+  return(res)
 
 
+}
 
 
 
