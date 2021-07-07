@@ -96,6 +96,78 @@ mrpt_budget_readData_ByDivision_cumPeriod <- function(file="data-raw/budget/执�
 }
 
 
+#' 进行报表数据的以预检验
+#'
+#' @param conn 连接
+#' @param FBrand 品牌
+#' @param FChannel 渠道
+#' @param FYear 年
+#' @param FPeriod 月份
+#' @param FSubChannel 子渠道
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_budget_readData_ByDivision_currentPreCheck()
+mrpt_budget_readData_ByDivision_currentPreCheck <- function(
+                                                          conn=tsda::conn_rds('jlrds'),
+
+                                                          FBrand='珀芙研',
+                                                          FChannel='电商',
+                                                          FYear=2021,
+                                                          FPeriod =5,
+                                                          FSubChannel=NA) {
+  if (is.na(FSubChannel)){
+    sql <- paste0("delete  from t_mrpt_budget
+where FBrand ='",FBrand,"' and FChannel='",FChannel,"' and FYear = ",FYear," and FPeriod = ",FPeriod,"")
+  }else{
+    sql <- paste0("delete from t_mrpt_budget
+where FBrand ='",FBrand,"' and FChannel='",FChannel,"' and FYear = ",FYear," and FPeriod = ",FPeriod," and FSubChannel ='",FSubChannel,"'")
+  }
+
+  tsda::sql_update(conn,sql)
+
+
+}
+
+
+#' 进行报表数据的以预检验
+#'
+#' @param conn 连接
+#' @param FBrand 品牌
+#' @param FChannel 渠道
+#' @param FYear 年
+#' @param FPeriod 月份
+#' @param FSubChannel 子渠道
+#'
+#' @return 返回值
+#' @export
+#'
+#' @examples
+#' mrpt_budget_readData_ByDivision_cumPreCheck()
+mrpt_budget_readData_ByDivision_cumPreCheck <- function(
+  conn=tsda::conn_rds('jlrds'),
+
+  FBrand='珀芙研',
+  FChannel='电商',
+  FYear=2021,
+  FPeriod =5,
+  FSubChannel=NA) {
+  if (is.na(FSubChannel)){
+    sql <- paste0("delete  from t_mrpt_budget
+where FBrand ='",FBrand,"' and FChannel='",FChannel,"' and FYear = ",FYear," and FPeriod <= ",FPeriod,"")
+  }else{
+    sql <- paste0("delete from t_mrpt_budget
+where FBrand ='",FBrand,"' and FChannel='",FChannel,"' and FYear = ",FYear," and FPeriod <= ",FPeriod," and FSubChannel ='",FSubChannel,"'")
+  }
+
+  tsda::sql_update(conn,sql)
+
+
+}
+
+
 #' 获取当前期间的预算数
 #'
 #' @param file 文件
@@ -154,5 +226,8 @@ mrpt_budget_readData_ByDivision_currentPeriod <- function(file="data-raw/budget/
   }
   return(data2)
 }
+
+
+
 
 
