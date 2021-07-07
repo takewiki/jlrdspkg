@@ -76,6 +76,10 @@ mrpt_budget_readData_ByDivision_cumPeriod <- function(file="data-raw/budget/执�
     data[i] <<- round(data[i],2)
   })
   data[is.na(data)] <- 0
+  col_names[1] <- '报表项目'
+  #确保第一个报表项目不会出错
+  names(data) <- col_names
+
   data$`报表项目代码` <- mrpt_rptItem_getNumber(conn = conn)
   data2 <- reshape2::melt(data = data,id.vars=c('报表项目代码','报表项目'),variable.name='FPeriod',value.name='FAmt')
   data2$FPeriod <- as.integer(  stringr::str_replace(data2$FPeriod,'月',''))
@@ -90,6 +94,8 @@ mrpt_budget_readData_ByDivision_cumPeriod <- function(file="data-raw/budget/执�
   data2 <- data2[data2$FPeriod <= FPeriod, ]
   ncount2 <- nrow(data2)
   if(ncount2 >0){
+    #支持多次重写
+    mrpt_budget_readData_ByDivision_cumPreCheck(conn = conn,FBrand = FBrand,FChannel = FChannel,FYear = FYear,FPeriod = FPeriod,FSubChannel = FSubChannel)
     tsda::db_writeTable(conn = conn,table_name = 't_mrpt_budget',r_object = data2,append = T)
   }
   return(data2)
@@ -203,11 +209,15 @@ mrpt_budget_readData_ByDivision_currentPeriod <- function(file="data-raw/budget/
   #print(data)
   #print(1)
   col_names <- names(data)
+  print(col_names)
   col_count <- length(col_names)
   lapply(2:col_count, function(i){
     data[i] <<- round(data[i],2)
   })
   data[is.na(data)] <- 0
+  #确保第一个报表项目不会出错
+  col_names[1] <- '报表项目'
+  names(data) <- col_names
   data$`报表项目代码` <- mrpt_rptItem_getNumber(conn = conn)
   data2 <- reshape2::melt(data = data,id.vars=c('报表项目代码','报表项目'),variable.name='FPeriod',value.name='FAmt')
   data2$FPeriod <- as.integer(  stringr::str_replace(data2$FPeriod,'月',''))
@@ -222,6 +232,8 @@ mrpt_budget_readData_ByDivision_currentPeriod <- function(file="data-raw/budget/
   data2 <- data2[data2$FPeriod == FPeriod, ]
   ncount2 <- nrow(data2)
   if(ncount2 >0){
+    #针对数据进行检查，支持多次重写
+    mrpt_budget_readData_ByDivision_currentPreCheck(conn = conn,FBrand = FBrand,FChannel = FChannel,FYear = FYear,FPeriod = FPeriod,FSubChannel = FSubChannel)
     tsda::db_writeTable(conn = conn,table_name = 't_mrpt_budget',r_object = data2,append = T)
   }
   return(data2)
